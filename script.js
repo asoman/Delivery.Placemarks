@@ -1,18 +1,18 @@
 window.onload = function () {
     var map;
     var points = new YMaps.GeoObjectCollection();
-
+	
     YMaps.jQuery(function () {
         // Создает экземпляр карты и привязывает его к созданному контейнеру
         map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
-
+		
         // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
         map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
         map.enableScrollZoom();
-    })
-
+	})
+	
     var list = new adressList();
-
+	
 	var searchButton = document.getElementById('findadress');
 	
     searchButton.onclick = function () {
@@ -26,77 +26,77 @@ window.onload = function () {
                 var isNew = true;
                 points.forEach(function (obj) {
                     if (point.name == obj.name) isNew = false
-                });
+				});
                 if (isNew) {
                     points.add(point);
                     list.addPoint(point);
                     map.addOverlay(points);
-                } else {
+					} else {
                     alert("Данный адрес уже есть в списке");
-                }
-            } else {
+				}
+				} else {
                 alert("Ничего не найдено")
-            }
-        });
-
+			}
+		});
+		
         YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (error) {
             alert("Произошла ошибка: " + error.message)
-        });
-    }
-		
-		searchButton.addEventListener("touchstart", function (event) {
-				event.preventDefault();
-                searchButton.click();
-                return false;
-            });
+		});
+	}
+	
+	searchButton.addEventListener("touchstart", function (event) {
+		event.preventDefault();
+		searchButton.click();
+		return false;
+	});
 	
     //Обработка события с нажатием клавиши Enter
     document.getElementById("form").addEventListener('keydown', function (event) {
         if (event.keyCode == 13) {
             event.preventDefault();
             document.getElementById('findadress').onclick();
-        }
-    });
-
+		}
+	});
+	
     function createPoint(obj) {
         var point = new YMaps.Placemark(obj.getGeoPoint());
         point.name = obj.text;
         return point
-    }
-
+	}
+	
     function adressList() {
-
+		
         this.container = document.getElementById('list')
-
+		
         // Формирование списка адресов
         this.generateList = function () {
             var _this = this;
             // Для каждого объекта вызываем функцию-обработчик
             points.forEach(function (obj) {
                 _this.addPoint(obj);
-            });
-        };
-
+			});
+		};
+		
         this.addPoint = function (obj) {
             var _this = this;
-
+			
             var li = YMaps.jQuery("<li><a href=\"#\">" + obj.name + "</a></li>"),
-                a = li.find("a");
-
+			a = li.find("a");
+			
             // Создание обработчика щелчка мыши по ссылке
             li.bind("click", function () {
                 points.remove(obj);
                 _this.container.innerHTML = "<ul></ul>";
                 _this.generateList();
                 return false;
-            });
+			});
 			li.bind("touchstart", function (event) {
-				 event.preventDefault();
+				event.preventDefault();
                 li.click();
                 return false;
 			});
             // Добавление ссылки на объект в общий список
             li.appendTo(_this.container);
-        }
-    }
+		}
+	}
 };
