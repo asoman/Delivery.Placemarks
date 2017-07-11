@@ -7,7 +7,7 @@
     <title>Document</title>
     <link href="bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://api-maps.yandex.ru/1.1/index.xml"></script>
-<!--    <script type="text/javascript" src="script.js"></script>-->
+    <!--    <script type="text/javascript" src="script.js"></script>-->
     <script type="text/javascript" src="angular.min.js"></script>
 </head>
 
@@ -28,16 +28,16 @@
                         var app = angular.module('myApp', []);
                         app.controller('todoCtrl', function($scope) {
                             var map;
-                        var points = new YMaps.GeoObjectCollection();
+                            var points = new YMaps.GeoObjectCollection();
 
-                        YMaps.jQuery(function() {
-                            // Создает экземпляр карты и привязывает его к созданному контейнеру
-                            map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+                            YMaps.jQuery(function() {
+                                // Создает экземпляр карты и привязывает его к созданному контейнеру
+                                map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
 
-                            // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
-                            map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-                            map.enableScrollZoom();
-                        })
+                                // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
+                                map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+                                map.enableScrollZoom();
+                            })
                             $scope.todoList = [{
                                 todoText: 'Clean House',
                                 done: false
@@ -45,9 +45,14 @@
 
                             var searchButton = document.getElementById('findadress');
 
+                            function createPoint(obj) {
+                                var point = new YMaps.Placemark(obj.getGeoPoint());
+                                point.name = obj.text;
+                                return point
+                            }
                             searchButton.onclick = function() {
                                 var adress = document.getElementById("adress").value;
-                                $scope=adress;
+                                $scope = adress;
                                 var geocoder = new YMaps.Geocoder($scope);
 
                                 YMaps.Events.observe(geocoder, geocoder.Events.Load, function() {
