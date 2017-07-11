@@ -1,15 +1,15 @@
 window.onload = function () {
-    var map;
-    var points = new YMaps.GeoObjectCollection();
-
-    YMaps.jQuery(function () {
-        // Создает экземпляр карты и привязывает его к созданному контейнеру
-        map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
-
-        // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
-        map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-        map.enableScrollZoom();
-    })
+//    var map;
+//    var points = new YMaps.GeoObjectCollection();
+//
+//    YMaps.jQuery(function () {
+//        // Создает экземпляр карты и привязывает его к созданному контейнеру
+//        map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+//
+//        // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
+//        map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+//        map.enableScrollZoom();
+//    })
 
     var list = new adressList();
 
