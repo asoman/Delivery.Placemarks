@@ -59,7 +59,7 @@
                                         if (isNew) {
                                             $scope.todoAdd = function() {
                                                 $scope.todoList.push({
-                                                    todoText: obj.todoInput,
+                                                    todoText: $scope.todoInput,
                                                     done: false
                                                 });
                                                 $scope.todoInput = "";
@@ -76,10 +76,6 @@
                                 YMaps.Events.observe(geocoder, geocoder.Events.Fault, function(error) {
                                     alert("Произошла ошибка: " + error.message)
                                 });
-
-                                var point = new YMaps.Placemark(obj.getGeoPoint());
-                                point.name = obj.text;
-                                $scope = point.name;
                             }
 
                             $scope.remove = function() {
