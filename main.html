@@ -25,7 +25,9 @@
                     </div>
                     <p><button ng-click="remove()" id="remove">Remove marked</button></p>
                     <script>
-                        var map;
+                        var app = angular.module('myApp', []);
+                        app.controller('todoCtrl', function($scope) {
+                            var map;
                         var points = new YMaps.GeoObjectCollection();
 
                         YMaps.jQuery(function() {
@@ -36,8 +38,6 @@
                             map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
                             map.enableScrollZoom();
                         })
-                        var app = angular.module('myApp', []);
-                        app.controller('todoCtrl', function($scope) {
                             $scope.todoList = [{
                                 todoText: 'Clean House',
                                 done: false
@@ -47,7 +47,8 @@
 
                             searchButton.onclick = function() {
                                 var adress = document.getElementById("adress").value;
-                                var geocoder = new YMaps.Geocoder(adress);
+                                $scope=adress;
+                                var geocoder = new YMaps.Geocoder($scope);
 
                                 YMaps.Events.observe(geocoder, geocoder.Events.Load, function() {
                                     if (this.length()) {
