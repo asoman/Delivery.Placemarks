@@ -7,7 +7,7 @@
     <title>Document</title>
     <link href="bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://api-maps.yandex.ru/1.1/index.xml"></script>
-    <script type="text/javascript" src="script.js"></script>
+<!--    <script type="text/javascript" src="script.js"></script>-->
     <script type="text/javascript" src="angular.min.js"></script>
 </head>
 
@@ -17,7 +17,7 @@
             <div class="row-fluid">
                 <div class="col-xs-12 col-xs-offset-0">
                     <div id="YMapsID" style="width:100%;height:70%"></div>
-                    <input type="text" ng-model="todoInput" size="50" placeholder="Введите адрес" id="adress">
+                    <input type="text" ng-model="todoInput" placeholder="Введите адрес" id="adress">
                     <button type="submit" class="btn btn-default" id="findadress" onclick="startup()">Добавить</button>
                     <!--                    <div style="width:100%;" id="list"></div>-->
                     <div ng-repeat="x in todoList">
@@ -25,6 +25,17 @@
                     </div>
                     <p><button ng-click="remove()" id="remove">Remove marked</button></p>
                     <script>
+                        var map;
+                        var points = new YMaps.GeoObjectCollection();
+
+                        YMaps.jQuery(function() {
+                            // Создает экземпляр карты и привязывает его к созданному контейнеру
+                            map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+
+                            // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
+                            map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+                            map.enableScrollZoom();
+                        })
                         var app = angular.module('myApp', []);
                         app.controller('todoCtrl', function($scope) {
                             $scope.todoList = [{
@@ -32,13 +43,44 @@
                                 done: false
                             }];
 
-                            $scope.todoAdd = function() {
-                                $scope.todoList.push({
-                                    todoText: $scope.todoInput,
-                                    done: false
+                            var searchButton = document.getElementById('findadress');
+
+                            searchButton.onclick = function() {
+                                var adress = document.getElementById("adress").value;
+                                var geocoder = new YMaps.Geocoder(adress);
+
+                                YMaps.Events.observe(geocoder, geocoder.Events.Load, function() {
+                                    if (this.length()) {
+                                        var point = createPoint(this.get(0));
+                                        var isNew = true;
+                                        points.forEach(function(obj) {
+                                            if (point.name == obj.name) isNew = false
+                                        });
+                                        if (isNew) {
+                                            $scope.todoAdd = function() {
+                                                $scope.todoList.push({
+                                                    todoText: obj.todoInput,
+                                                    done: false
+                                                });
+                                                $scope.todoInput = "";
+                                            };
+                                            map.addOverlay(points);
+                                        } else {
+                                            alert("Данный адрес уже есть в списке");
+                                        }
+                                    } else {
+                                        alert("Ничего не найдено")
+                                    }
                                 });
-                                $scope.todoInput = "";
-                            };
+
+                                YMaps.Events.observe(geocoder, geocoder.Events.Fault, function(error) {
+                                    alert("Произошла ошибка: " + error.message)
+                                });
+
+                                var point = new YMaps.Placemark(obj.getGeoPoint());
+                                point.name = obj.text;
+                                $scope = point.name;
+                            }
 
                             $scope.remove = function() {
                                 var oldList = $scope.todoList;
