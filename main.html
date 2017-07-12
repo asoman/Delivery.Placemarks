@@ -7,97 +7,90 @@
     <title>Document</title>
     <link href="bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://api-maps.yandex.ru/1.1/index.xml"></script>
-    <!--    <script type="text/javascript" src="script.js"></script>-->
     <script type="text/javascript" src="angular.min.js"></script>
 </head>
 
 <body ng-app="myApp" ng-controller="todoCtrl">
-    <form ng-submit="todoAdd()">
+    <form ng-submit="todoAdd()" id="form">
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-xs-12 col-xs-offset-0">
                     <div id="YMapsID" style="width:100%;height:70%"></div>
-                    <input type="text" ng-model="todoInput" placeholder="Введите адрес" id="adress">
+                    <input type="text" ng-model="todoInput" class="form-control" placeholder="Введите адрес" id="adress">
                     <button type="submit" class="btn btn-default" id="findadress" onclick="startup()">Добавить</button>
-                    <!--                    <div style="width:100%;" id="list"></div>-->
+                    <div style="width:100%;" id="list"></div>
                     <div ng-repeat="x in todoList">
                         <input type="checkbox" ng-model="x.done"> <span ng-bind="x.todoText"></span>
                     </div>
-                    <p><button ng-click="remove()" id="remove">Remove marked</button></p>
-                    <script>
-                        var app = angular.module('myApp', []);
-                        app.controller('todoCtrl', function($scope) {
-                            var map;
-                            var points = new YMaps.GeoObjectCollection();
-
-                            YMaps.jQuery(function() {
-                                // Создает экземпляр карты и привязывает его к созданному контейнеру
-                                map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
-
-                                // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
-                                map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-                                map.enableScrollZoom();
-                            })
-                            $scope.todoList = [{
-                                todoText: 'Clean House',
-                                done: false
-                            }];
-
-                            var searchButton = document.getElementById('findadress');
-
-                            function createPoint(obj) {
-                                var point = new YMaps.Placemark(obj.getGeoPoint());
-                                point.name = obj.text;
-                                return point
-                            }
-                            searchButton.onclick = function() {
-                                var adress = document.getElementById("adress").value;
-                                $scope = adress;
-                                var geocoder = new YMaps.Geocoder($scope);
-
-                                YMaps.Events.observe(geocoder, geocoder.Events.Load, function() {
-                                    if (this.length()) {
-                                        var point = createPoint(this.get(0));
-                                        var isNew = true;
-                                        points.forEach(function(obj) {
-                                            if (point.name == obj.name) isNew = false
-                                        });
-                                        if (isNew) {
-                                            $scope.todoAdd = function() {
-                                                $scope.todoList.push({
-                                                    todoText: $scope.todoInput,
-                                                    done: false
-                                                });
-                                                $scope.todoInput = "";
-                                            };
-                                            map.addOverlay(points);
-                                        } else {
-                                            alert("Данный адрес уже есть в списке");
-                                        }
-                                    } else {
-                                        alert("Ничего не найдено")
-                                    }
-                                });
-
-                                YMaps.Events.observe(geocoder, geocoder.Events.Fault, function(error) {
-                                    alert("Произошла ошибка: " + error.message)
-                                });
-                            }
-
-                            $scope.remove = function() {
-                                var oldList = $scope.todoList;
-                                $scope.todoList = [];
-                                angular.forEach(oldList, function(x) {
-                                    if (!x.done) $scope.todoList.push(x);
-                                });
-                            };
-                        });
-
-                    </script>
+                    <p><button class="btn btn-default" ng-click="remove()">Удалить выбранное</button></p>
                 </div>
             </div>
         </div>
     </form>
+    <script>
+        window.onload = function() {
+            var map;
+            var points = new YMaps.GeoObjectCollection();
+
+            YMaps.jQuery(function() {
+                // Создает экземпляр карты и привязывает его к созданному контейнеру
+                map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+
+                // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
+                map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+                map.enableScrollZoom();
+            })
+
+            document.getElementById('findadress').onclick = function() { //Находим элемент по айди и вешаем на него событие onclick
+                var adress = document.getElementById("adress").value; //достаём значение, которое ввели в поле
+                var geocoder = new YMaps.Geocoder(adress); //отправляем запрос геокодирования
+
+                YMaps.Events.observe(geocoder, geocoder.Events.Load, function() { //Вешаем обработчик на событие "ответа" от сервера. В данном случае ответа без ошибок. 
+                    if (this.length()) { //Проверяем нашли ли что нибудь по адресу
+                        var point = createPoint(this.get(0)); //первая строка результата поиска отправляется параметром в функцию
+                        points.add(point); //добавляем адрес в контейнер
+                        map.addOverlay(points); //отображаем все адреса на карте
+                    } else {
+                        alert("Ничего не найдено")
+                    }
+                });
+
+                YMaps.Events.observe(geocoder, geocoder.Events.Fault, function(error) { //Обработчик ответа от сервера с ошибкой
+                    alert("Произошла ошибка: " + error.message)
+                });
+            }
+
+            function createPoint(obj) {
+                var point = new YMaps.Placemark(obj.getGeoPoint());
+                point.name = obj.text;
+                return point
+            }
+        }
+                    var app = angular.module('myApp', []);
+            app.controller('todoCtrl', function($scope) {
+                $scope.todoList = [{
+                    todoText: 'Clean House',
+                    done: false
+                }];
+
+                $scope.todoAdd = function() {
+                    $scope.todoList.push({
+                        todoText: $scope.todoInput,
+                        done: false
+                    });
+                    $scope.todoInput = "";
+                };
+
+                $scope.remove = function() {
+                    var oldList = $scope.todoList;
+                    $scope.todoList = [];
+                    angular.forEach(oldList, function(x) {
+                        if (!x.done) $scope.todoList.push(x);
+                    });
+                };
+            });
+
+    </script>
 </body>
 
 </html>
