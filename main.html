@@ -55,9 +55,11 @@
 
 			function addToList(point)
 			{
-				 $scope.todoList.push({
-					geopoint: point,
-					done: false
+				$scope.$apply(function() {
+					$scope.todoList.push({
+						geopoint: point,
+						done: false
+					});
 				});
 			}
 			
