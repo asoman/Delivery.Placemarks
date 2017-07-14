@@ -89,16 +89,12 @@
 
         $scope.remove = function() {
             var oldList = $scope.todoList;
-            $scope.todoList = [];
 			
             angular.forEach(oldList, function(x) {
-                if (!x.done) {
-                    $scope.todoList.push(x);
-					alert(points);
+                if (x.done) {
+					$scope.todoList.splice($scope.todoList.indexOf(x), 1);
+					points.remove(x.geopoint); 
                 }
-				else {
-				points.remove(x.geopoint);
-				}
             });
         };
     });
