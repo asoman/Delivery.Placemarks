@@ -53,6 +53,14 @@
                 return point
             }
 
+			function addToList(text)
+			{
+				 $scope.todoList.push({
+					todoText: text,
+					done: false
+				});
+			}
+			
             YMaps.Events.observe(geocoder, geocoder.Events.Load, function() {
                 if (this.length()) {
                     var point = createPoint(this.get(0));
@@ -63,6 +71,7 @@
                     if (isNew) {
                         points.add(point);
                         map.addOverlay(points);
+						addToList(point.name);
                     } else {
                         alert("Данный адрес уже есть в списке");
                     }
@@ -75,10 +84,6 @@
                 alert("Произошла ошибка: " + error.message)
             });
 
-            $scope.todoList.push({
-                todoText: $scope.todoInput,
-                done: false
-            });
             $scope.todoInput = "";
         };
 
