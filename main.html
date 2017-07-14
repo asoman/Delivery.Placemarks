@@ -19,7 +19,7 @@
                     <input type="text" ng-model="todoInput" class="form-control" placeholder="Введите адрес" id="adress">
                     <button type="submit" class="btn btn-default" id="findadress">Добавить</button>
                     <div ng-repeat="x in todoList">
-                        <input type="checkbox" ng-model="x.done"> <span ng-bind="x.todoText"></span>
+                        <input type="checkbox" ng-model="x.done"> <span ng-bind="x.geopoint.name"></span>
                     </div>
                     <p><button type="button" class="btn btn-default" ng-click="remove()">Удалить выбранное</button></p>
                 </div>
@@ -53,10 +53,10 @@
                 return point
             }
 
-			function addToList(text)
+			function addToList(point)
 			{
 				 $scope.todoList.push({
-					todoText: text,
+					geopoint: point,
 					done: false
 				});
 			}
@@ -70,8 +70,8 @@
                     });
                     if (isNew) {
                         points.add(point);
+						addToList(point);
                         map.addOverlay(points);
-						addToList(point.name);
                     } else {
                         alert("Данный адрес уже есть в списке");
                     }
@@ -90,11 +90,15 @@
         $scope.remove = function() {
             var oldList = $scope.todoList;
             $scope.todoList = [];
+			
             angular.forEach(oldList, function(x) {
                 if (!x.done) {
                     $scope.todoList.push(x);
-                    points.remove(obj);
+					alert(points);
                 }
+				else {
+				points.remove(x.geopoint);
+				}
             });
         };
     });
